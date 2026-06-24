@@ -1,35 +1,49 @@
-name: Hospital CI
+
+name: CI - Online Voting System
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      # 1. Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 2. Setup Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3. Install Backend Dependencies
       - name: Install Backend Dependencies
-        run: |
-          cd backend
-          npm install
+        working-directory: ./backend
+        run: npm install
 
+      # 4. Install Frontend Dependencies
       - name: Install Frontend Dependencies
-        run: |
-          cd frontend
-          npm install
+        working-directory: ./frontend
+        run: npm install --legacy-peer-deps
 
+      # 5. Build Frontend (Vite)
       - name: Build Frontend
-        run: |
-          cd frontend
-          npm run build
+        working-directory: ./frontend
+        run: npm run build
+
+      # 6. Build Docker Images
+      - name: Build Backend Docker Image
+        run: docker build -t voting-backend ./backend
+
+      - name: Build Frontend Docker Image
+        run: docker build -t voting-frontend ./frontend
+
+      # 7. Success Message
+      - name: CI Success
+        run: echo "CI Pipeline Completed Successfully 🚀"
