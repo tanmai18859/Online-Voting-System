@@ -18,7 +18,7 @@ pipeline {
         stage('Install Backend Dependencies') {
             steps {
                 dir("${BACKEND_DIR}") {
-                    bat 'npm install'
+                    sh 'npm install'
                 }
             }
         }
@@ -26,7 +26,7 @@ pipeline {
         stage('Install Frontend Dependencies') {
             steps {
                 dir("${FRONTEND_DIR}") {
-                    bat 'npm install --legacy-peer-deps'
+                    sh 'npm install --legacy-peer-deps'
                 }
             }
         }
@@ -41,14 +41,14 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                bat 'docker build -t voting-backend ./backend'
-                bat 'docker build -t voting-frontend ./frontend'
+                sh 'docker build -t voting-backend ./backend'
+                sh 'docker build -t voting-frontend ./frontend'
             }
         }
 
         stage('Run Containers') {
             steps {
-                bat 'docker-compose up -d --build'
+                sh 'docker-compose up -d --build'
             }
         }
     }
