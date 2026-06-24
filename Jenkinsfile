@@ -34,7 +34,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir("${FRONTEND_DIR}") {
-                    bat 'npm run build'
+                    sh 'npm run build'
                 }
             }
         }
