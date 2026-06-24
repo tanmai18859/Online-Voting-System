@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node20'
+    }
+
+    stages {
+pipeline {
+    agent any
+
     environment {
         BACKEND_DIR = "backend"
         FRONTEND_DIR = "frontend"
@@ -15,13 +23,14 @@ pipeline {
             }
         }
 
-        stage('Install Backend Dependencies') {
-            steps {
-                dir("${BACKEND_DIR}") {
-                    sh 'npm install'
-                }
-            }
+       stage('Install Backend Dependencies') {
+    steps {
+        dir('backend') {
+            sh 'node -v'
+            sh 'npm install'
         }
+    }
+}
 
         stage('Install Frontend Dependencies') {
             steps {
