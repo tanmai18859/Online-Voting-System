@@ -1,42 +1,65 @@
 pipeline {
     agent any
 
+    environment {
+        BACKEND_DIR = "backend"
+        FRONTEND_DIR = "frontend"
+    }
+
     stages {
 
-        stage('Clone') {
+        stage('Checkout Code') {
             steps {
-                echo 'Cloning Repository...'
+                echo 'Cloning repository...'
+                checkout scm
             }
         }
 
         stage('Install Backend Dependencies') {
             steps {
-                dir('backend') {
-                    sh 'npm install'
+                dir("${BACKEND_DIR}") {
+                    bat 'npm install'
                 }
             }
         }
 
         stage('Install Frontend Dependencies') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
+                dir("${FRONTEND_DIR}") {
+                    bat 'npm install --legacy-peer-deps'
                 }
             }
         }
 
         stage('Build Frontend') {
             steps {
-                dir('frontend') {
-                    sh 'npm run build'
+                dir("${FRONTEND_DIR}") {
+                    bat 'npm run build'
                 }
             }
         }
 
-        stage('Build Successful') {
+        stage('Build Docker Images') {
             steps {
-                echo 'online voting system Build Completed Successfully!'
+                bat 'docker build -t voting-backend ./backend'
+                bat 'docker build -t voting-frontend ./frontend'
             }
+        }
+
+        stage('Run Containers') {
+            steps {
+                bat 'docker-compose up -d --build'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 Jenkins Pipeline SUCCESS - Voting System Running!'
+        }
+
+        failure {
+            echo '❌ Jenkins Pipeline FAILED - Check logs'
         }
     }
 }
